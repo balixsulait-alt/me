@@ -28,3 +28,14 @@ The server reads the `PORT` environment variable (default `3000`).
 - Start command: `npm start`
 - Port: use the `PORT` environment variable (the server already does)
 - Health check path: `/api/health`
+
+## Deploy on Render
+
+Option A (blueprint): push the repo to GitHub, then in Render choose **New > Blueprint**; `render.yaml` configures everything.
+
+Option B (manual): create a **Web Service** with
+- Build command: `npm install && npm run build`
+- Start command: `npm start`
+- Health check path: `/api/health`
+
+Render provides `PORT` automatically; no other environment variables are needed.
