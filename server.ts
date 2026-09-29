@@ -1,7 +1,6 @@
 import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
-import { createServer as createViteServer } from 'vite';
 
 dotenv.config();
 
@@ -50,6 +49,7 @@ async function startServer() {
 
   // Vite middleware in dev or static files in prod
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
