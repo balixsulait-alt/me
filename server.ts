@@ -1,36 +1,17 @@
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json());
 
-  // Helper for lazy Gemini AI instance
-  const getAI = () => {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return null;
-    return new GoogleGenAI({
-      apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        },
-      },
-    });
-  };
-
-  // Health check endpoint (Render friendly)
+  // Health check endpoint
   app.get('/api/health', (req, res) => {
     res.json({
       status: 'operational',
@@ -53,134 +34,12 @@ async function startServer() {
     res.json({ success: true, count: intelNodes.length, feed: intelNodes });
   });
 
-  // AI Security Code & Threat Analyzer
-  app.post('/api/ai/security-audit', async (req, res) => {
-    const { codeSnippet, language, attackScenario } = req.body;
-
-    if (!codeSnippet && !attackScenario) {
-      return res.status(400).json({ error: 'Code snippet or attack scenario is required.' });
-    }
-
-    try {
-      const ai = getAI();
-      if (!ai) {
-        // Fallback intelligent simulation if no API key is set in local environment
-        return res.json({
-          simulated: true,
-          analysis: {
-            vulnerabilityIdentified: attackScenario || 'Unsanitized Input in Dynamic Query / Execution Vector',
-            riskLevel: 'HIGH (CVSS 8.4)',
-            cwe: 'CWE-89 (SQL Injection) / CWE-78 (OS Command Injection)',
-            exploitationPath: 'Attacker injects escape sequences into parameter buffers, triggering arbitrary execution or unauthorized state mutation.',
-            remediation: [
-              'Implement parameterized queries or prepared statements with strict type bounds.',
-              'Apply principle of least privilege on runtime service accounts.',
-              'Enforce strict input validation via regex whitelist before parsing.'
-            ],
-            patchedSnippet: `// Patched Implementation (Red Team Hardened):\n// Enforce parameterized execution and sanitization bounds\nconst safeResult = await db.query(\n  'SELECT id, role, hash FROM users WHERE username = $1 AND active = true',\n  [sanitizedInput]\n);`,
-            redTeamNotes: 'Verified payload deterrence against automated fuzzers and sqlmap automated extraction sweeps.'
-          }
-        });
-      }
-
-      const prompt = `You are Sulaiman Balikoowa's automated Ethical Hacking & Red Team Security Analysis assistant.
-Analyze the following code snippet or attack scenario:
-Language: ${language || 'Auto-detect'}
-Scenario: ${attackScenario || 'General Security & Vulnerability Audit'}
-Code:
-\`\`\`
-${codeSnippet || 'N/A'}
-\`\`\`
-
-Provide a strict, professional cybersecurity audit in JSON format with the following keys:
-- vulnerabilityIdentified (string)
-- riskLevel (string, e.g. "CRITICAL (CVSS 9.8)" or "HIGH (CVSS 8.2)")
-- cwe (string, e.g. "CWE-89")
-- exploitationPath (string, step-by-step description of how a red teamer exploits it)
-- remediation (array of 3-4 bullet strings)
-- patchedSnippet (string with corrected, hardened code)
-- redTeamNotes (string, proactive defense advice)`;
-
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.7-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-        },
-      });
-
-      const text = response.text || '{}';
-      const parsed = JSON.parse(text);
-      return res.json({ simulated: false, analysis: parsed });
-    } catch (err: any) {
-      console.error('Error in security audit:', err);
-      return res.status(500).json({ error: 'Failed to analyze security payload: ' + (err.message || 'Internal error') });
-    }
-  });
-
-  // AI Big Data Pipeline & Query Optimizer
-  app.post('/api/ai/optimize-query', async (req, res) => {
-    const { query, engine, volume } = req.body;
-
-    if (!query) {
-      return res.status(400).json({ error: 'Query or pipeline script is required.' });
-    }
-
-    try {
-      const ai = getAI();
-      if (!ai) {
-        return res.json({
-          simulated: true,
-          optimization: {
-            bottleneck: 'Full Table Scan & Unpartitioned Shuffle in distributed stages',
-            estimatedSpeedup: '4.8x Throughput Improvement',
-            memoryImpact: '-62% RAM Allocation / Garbage Collection pressure reduced',
-            optimizedQuery: `-- Partition-pruned & Indexed vectorized aggregation\nSELECT event_date, tenant_id, COUNT(1) AS agg_events, APPROX_COUNT_DISTINCT(user_ip) AS unique_sources\nFROM security_telemetry_stream PARTITION (date = CURRENT_DATE)\nWHERE status_code >= 400\nGROUP BY event_date, tenant_id;`,
-            recommendations: [
-              'Introduce timestamp bucketing to prevent Spark/PostgreSQL partition skew.',
-              'Replace exact count distinct with HyperLogLog for high-cardinality streaming.',
-              'Broadcast small lookup tables to eliminate costly shuffle stages.'
-            ]
-          }
-        });
-      }
-
-      const prompt = `You are Sulaiman Balikoowa's Big Data Architecture & Stream Pipeline Optimizer.
-Analyze the following data query or distributed processing pipeline logic:
-Engine: ${engine || 'Distributed SQL / PySpark / PostgreSQL'}
-Data Scale: ${volume || '10M+ events/min'}
-Query/Logic:
-\`\`\`
-${query}
-\`\`\`
-
-Provide an optimization report in JSON format with keys:
-- bottleneck (string)
-- estimatedSpeedup (string)
-- memoryImpact (string)
-- optimizedQuery (string)
-- recommendations (array of strings)`;
-
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.7-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-        },
-      });
-
-      const text = response.text || '{}';
-      const parsed = JSON.parse(text);
-      return res.json({ simulated: false, optimization: parsed });
-    } catch (err: any) {
-      console.error('Error in query optimization:', err);
-      return res.status(500).json({ error: 'Failed to optimize data query: ' + (err.message || 'Internal error') });
-    }
-  });
-
   // Contact submission
   app.post('/api/contact', (req, res) => {
-    const { name, email, subject, message } = req.body;
+    const { name, email, subject, message } = req.body || {};
+    if (!name || !email || !message) {
+      return res.status(400).json({ success: false, message: 'Name, email and message are required.' });
+    }
     console.log(`[Contact Form Received] From: ${name} <${email}> | Subject: ${subject}`);
     res.json({
       success: true,
@@ -199,7 +58,7 @@ Provide an optimization report in JSON format with keys:
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }

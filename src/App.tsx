@@ -7,7 +7,6 @@ import { AttackSimulator } from './components/AttackSimulator';
 import { BigDataDashboard } from './components/BigDataDashboard';
 import { RealisticProjectsGrid } from './components/RealisticProjectsGrid';
 import { ProjectMetricsAnalyzer } from './components/ProjectMetricsAnalyzer';
-import { AISecurityLab } from './components/AISecurityLab';
 import { StartupRoadmap } from './components/StartupRoadmap';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
@@ -20,7 +19,7 @@ function PortfolioApp() {
   // Track active scroll section for navigation highlight
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'simulator', 'bigdata', 'projects', 'metrics', 'ai-lab', 'roadmap', 'contact'];
+      const sections = ['hero', 'simulator', 'bigdata', 'projects', 'metrics', 'roadmap', 'contact'];
       const scrollPos = window.scrollY + 200;
 
       for (const sectionId of sections) {
@@ -81,13 +80,11 @@ function PortfolioApp() {
         {/* 6. Project Metrics & Analysis Tools */}
         <ProjectMetricsAnalyzer />
 
-        {/* 7. AI Security Code Auditor & Query Optimizer */}
-        <AISecurityLab />
 
-        {/* 8. 2030 Future Founder Roadmap */}
+        {/* 7. 2030 Future Founder Roadmap */}
         <StartupRoadmap />
 
-        {/* 9. Secure Contact & Transmission Channel */}
+        {/* 8. Secure Contact & Transmission Channel */}
         <ContactSection />
       </main>
 

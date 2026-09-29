@@ -27,7 +27,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, activeSection })
     { label: 'Big Data', href: '#bigdata', icon: Database },
     { label: 'Projects', href: '#projects', icon: Cpu },
     { label: 'Metrics', href: '#metrics', icon: Activity },
-    { label: 'AI Security Lab', href: '#ai-lab', icon: Terminal },
     { label: '2030 Roadmap', href: '#roadmap', icon: ArrowUpRight },
   ];
 

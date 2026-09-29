@@ -1,20 +1,30 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Sulaiman Balikoowa — Portfolio
 
-# Run and deploy your AI Studio app
+Interactive cybersecurity, ethical hacking and big data portfolio built with React, Vite, Tailwind CSS and an Express server.
 
-This contains everything you need to run your app locally.
+## Run locally
 
-View your app in AI Studio: https://ai.studio/apps/a3bb24c2-06a4-4c7f-b5c4-1991d77ceac4
+Prerequisites: Node.js 18+
 
-## Run Locally
+```bash
+npm install
+npm run dev
+```
 
-**Prerequisites:**  Node.js
+The app runs on http://localhost:3000.
 
+## Production build
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run build
+npm start
+```
+
+The server reads the `PORT` environment variable (default `3000`).
+
+## Deploy on SnapDeploy
+
+- Build command: `npm install && npm run build`
+- Start command: `npm start`
+- Port: use the `PORT` environment variable (the server already does)
+- Health check path: `/api/health`
